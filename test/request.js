@@ -14,7 +14,7 @@ heads.forEach(function (head, index) {
     var req = new Request(head)
     t.equal(req.rtspVersion, '1.0')
     t.equal(req.method, 'OPTIONS')
-    t.equal(req.url, '*')
+    t.equal(req.uri, '*')
     t.deepEqual(req.headers, { cseq: '42', foo: 'Bar' })
     t.end()
   })

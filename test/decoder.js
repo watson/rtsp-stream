@@ -13,7 +13,7 @@ test('request headers', function (t) {
 
   decoder.on('request', function (req) {
     t.equal(req.method, 'OPTIONS')
-    t.equal(req.url, '*')
+    t.equal(req.uri, '*')
     t.equal(req.rtspVersion, '1.0')
     t.deepEqual(req.headers, { 'cseq': '42', 'foo': 'Bar' })
   })

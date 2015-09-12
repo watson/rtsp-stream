@@ -135,11 +135,6 @@ valid status codes see the `rtspStream.STATUS_CODES` object.
 
 A boolean. `true` if the response headers have flushed.
 
-#### `Response.sendDate`
-
-A boolean. Defaults to `true`. Set it to `false` if you do not want the
-response to automatically be populated with the `Date` response header.
-
 #### `Response.setHeader(name, value)`
 
 Set a header to be sent along with the RTSP response body. Throws an

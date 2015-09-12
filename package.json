@@ -1,6 +1,6 @@
 {
   "name": "rtsp-stream",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Encode/Decode an RTSP stream",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/watson/rtsp-stream#readme",
   "coordinates": [
-    55.67672959999999,
-    12.5757938
+    55.6767233,
+    12.5758312
   ]
 }

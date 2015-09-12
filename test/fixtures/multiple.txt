@@ -1,0 +1,10 @@
+ANNOUNCE rtsp://example.com/1 RTSP/1.0
+CSeq: 1
+Content-Length: 11
+
+1st requestANNOUNCE rtsp://example.com/2 RTSP/1.0
+CSeq: 2
+Foo: Bar
+Content-Length: 12
+
+last request

@@ -1,0 +1,44 @@
+{
+  "name": "rtsp-stream",
+  "version": "0.0.0",
+  "description": "Encode/Decode an RTSP stream",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && tape test/*.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/watson/rtsp-stream.git"
+  },
+  "keywords": [
+    "rtsp",
+    "stream",
+    "encode",
+    "decode",
+    "encoder",
+    "decoder",
+    "request",
+    "response",
+    "2326",
+    "rfc2326"
+  ],
+  "dependencies": {
+    "debug": "^2.2.0",
+    "http-headers": "^1.1.1",
+    "next-line": "^1.1.0",
+    "readable-stream": "^2.0.2"
+  },
+  "devDependencies": {
+    "standard": "^5.2.1",
+    "tape": "^4.2.0"
+  },
+  "author": "Thomas Watson Steen <w@tson.dk> (https://twitter.com/wa7son)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/watson/rtsp-stream/issues"
+  },
+  "homepage": "https://github.com/watson/rtsp-stream#readme"
+}

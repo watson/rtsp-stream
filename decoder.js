@@ -4,7 +4,6 @@ var util = require('util')
 var stream = require('readable-stream')
 var Request = require('./lib/request')
 var debug = require('./lib/debug')
-var Encoder = require('./encoder')
 
 var HEADER_MAX_BYTES = 1024 // TODO: Figure out the best max size of the header
 var CR = 0x0d
@@ -52,7 +51,6 @@ Decoder.prototype._writeHead = function (chunk, offset) {
   debug('end of header')
 
   this._req = new Request(this._header)
-  var res = new Encoder()
 
   this._headerOffset = 0
   this._header = new Buffer(HEADER_MAX_BYTES)
@@ -69,7 +67,7 @@ Decoder.prototype._writeHead = function (chunk, offset) {
     this._cb = null
   })
 
-  this.emit('request', this._req, res)
+  this.emit('request', this._req)
 
   return bodyStart - origHeaderOffset
 }

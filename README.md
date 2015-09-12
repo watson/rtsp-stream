@@ -1,6 +1,11 @@
 # rtsp-stream
 
-Encode/Decode an RTSP stream
+Encode/Decode an RTSP stream.
+
+This project aims for 100% compliance with [RFC
+2326](https://tools.ietf.org/html/rfc2326). If you find something
+missing, please [open an
+issue](https://github.com/watson/rtsp-stream/issues).
 
 [![Build status](https://travis-ci.org/watson/rtsp-stream.svg?branch=master)](https://travis-ci.org/watson/rtsp-stream)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)

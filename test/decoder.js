@@ -5,13 +5,10 @@ var path = require('path')
 var test = require('tape')
 var Decoder = require('../decoder')
 
-var optionsStream = fs.createReadStream(path.resolve('test', 'fixtures', 'options.txt'))
-var announceStream = fs.createReadStream(path.resolve('test', 'fixtures', 'announce.txt'))
-var multipleStream = fs.createReadStream(path.resolve('test', 'fixtures', 'multiple.txt'))
-
 test('request headers', function (t) {
   t.plan(4)
 
+  var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'options.txt'))
   var decoder = new Decoder()
 
   decoder.on('request', function (req) {
@@ -21,12 +18,13 @@ test('request headers', function (t) {
     t.deepEqual(req.headers, { 'cseq': '42', 'foo': 'Bar' })
   })
 
-  optionsStream.pipe(decoder)
+  stream.pipe(decoder)
 })
 
 test('request body', function (t) {
   t.plan(1)
 
+  var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'announce.txt'))
   var decoder = new Decoder()
 
   decoder.on('request', function (req) {
@@ -38,11 +36,12 @@ test('request body', function (t) {
     })
   })
 
-  announceStream.pipe(decoder)
+  stream.pipe(decoder)
 })
 
 test('multiple request bodies', function (t) {
   var requests = 0
+  var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'multiple.txt'))
   var decoder = new Decoder()
   var expected = [
     '1st request',
@@ -65,5 +64,5 @@ test('multiple request bodies', function (t) {
     t.end()
   })
 
-  multipleStream.pipe(decoder)
+  stream.pipe(decoder)
 })

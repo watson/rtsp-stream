@@ -15,6 +15,7 @@
   },
   "keywords": [
     "rtsp",
+    "protocol",
     "stream",
     "encode",
     "decode",
@@ -22,6 +23,8 @@
     "decoder",
     "request",
     "response",
+    "serial",
+    "multiplexer",
     "2326",
     "rfc2326"
   ],

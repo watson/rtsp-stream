@@ -8,6 +8,7 @@ var debug = require('./lib/debug')
 var HEADER_MAX_BYTES = 1024 // TODO: Figure out the best max size of the header
 var CR = 0x0d
 var NL = 0x0a
+var NO_BODY_STATUS_CODES = [100, 304]
 
 var Decoder = module.exports = function (opts) {
   if (!(this instanceof Decoder)) return new Decoder(opts)
@@ -55,7 +56,12 @@ Decoder.prototype._writeHead = function (chunk, offset) {
   this._headerOffset = 0
   this._header = new Buffer(HEADER_MAX_BYTES)
   this._inBody = true
-  this._bodySize = parseInt(this._req.headers['content-length'], 10) || 0
+
+  if (~NO_BODY_STATUS_CODES.indexOf(this._msg.statusCode)) {
+    this._bodySize = 0
+  } else {
+    this._bodySize = parseInt(this._msg.headers['content-length'], 10) || 0
+  }
 
   // _writeBody logic to handle back-pressure
   var self = this

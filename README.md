@@ -1,11 +1,25 @@
 # rtsp-stream
 
-Encode/Decode an RTSP stream.
+A transport agnostic RTSP serial multiplexer module for Node. Use it to
+encode or decode RTSP data streams.
 
 This project aims for 100% compliance with [RFC
 2326](https://tools.ietf.org/html/rfc2326). If you find something
 missing, please [open an
 issue](https://github.com/watson/rtsp-stream/issues).
+
+Protocol features currently supported:
+
+- Client to server requests/responses
+- Server to client requests/responses
+- Persistent transport connections
+- Connectionless mode (this is just data stream parsing, so sessions
+  must be handled elsewhere)
+- Pipelining
+
+Protocol features that are out of scope for this module:
+
+- Session handling
 
 [![Build status](https://travis-ci.org/watson/rtsp-stream.svg?branch=master)](https://travis-ci.org/watson/rtsp-stream)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)

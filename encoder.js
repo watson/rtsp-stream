@@ -3,11 +3,12 @@
 var util = require('util')
 var stream = require('readable-stream')
 var Response = require('./lib/response')
+var Request = require('./lib/request')
 
 var Encoder = module.exports = function (opts) {
   if (!(this instanceof Encoder)) return new Encoder(opts)
   stream.Readable.call(this, opts)
-  this._responseQueue = []
+  this._messageQueue = []
 }
 
 util.inherits(Encoder, stream.Readable)
@@ -37,16 +38,28 @@ Encoder.prototype.response = function () {
   return res
 }
 
-Encoder.prototype._pushQueue = function (res) {
-  this._responseQueue.push(res)
-  if (this._responseQueue.length > 1) return
-  res.once('finish', this._shiftQueue.bind(this))
-  res._kick()
+// Options:
+// - method
+// - uri
+// - headers (optional)
+// - body (optional)
+Encoder.prototype.request = function (opts, cb) {
+  var req = new Request(this, opts)
+  if (cb) req.on('finish', cb)
+  this._pushQueue(req)
+  return req
+}
+
+Encoder.prototype._pushQueue = function (msg) {
+  this._messageQueue.push(msg)
+  if (this._messageQueue.length > 1) return
+  msg.once('finish', this._shiftQueue.bind(this))
+  msg._kick()
 }
 
 Encoder.prototype._shiftQueue = function () {
-  this._responseQueue.shift()
-  if (this._responseQueue.length === 0) return
-  this._responseQueue[0].once('finish', this._shiftQueue.bind(this))
-  this._responseQueue[0]._kick()
+  this._messageQueue.shift()
+  if (this._messageQueue.length === 0) return
+  this._messageQueue[0].once('finish', this._shiftQueue.bind(this))
+  this._messageQueue[0]._kick()
 }

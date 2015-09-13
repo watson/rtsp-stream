@@ -2,7 +2,7 @@
 
 var util = require('util')
 var stream = require('readable-stream')
-var Request = require('./lib/request')
+var IncomingMessage = require('./lib/incoming-message')
 var debug = require('./lib/debug')
 
 var HEADER_MAX_BYTES = 1024 // TODO: Figure out the best max size of the header
@@ -50,7 +50,7 @@ Decoder.prototype._writeHead = function (chunk, offset) {
 
   debug('end of header')
 
-  this._req = new Request(this._header)
+  this._msg = new IncomingMessage(this._header)
 
   this._headerOffset = 0
   this._header = new Buffer(HEADER_MAX_BYTES)
@@ -59,7 +59,7 @@ Decoder.prototype._writeHead = function (chunk, offset) {
 
   // _writeBody logic to handle back-pressure
   var self = this
-  this._req.on('drain', function () {
+  this._msg.on('drain', function () {
     if (!this._chunk) return
     self._writeOffset(this._chunk, this._end, this._cb)
     this._chunk = null
@@ -67,7 +67,8 @@ Decoder.prototype._writeHead = function (chunk, offset) {
     this._cb = null
   })
 
-  this.emit('request', this._req)
+  if (this._msg.method) this.emit('request', this._msg)
+  else this.emit('response', this._msg)
 
   return bodyStart - origHeaderOffset
 }
@@ -82,7 +83,7 @@ Decoder.prototype._writeBody = function (chunk, offset, cb) {
   var bytesLeft = this._bodySize - this._bodyBytesWritten
   var end = bytesLeft < chunk.length - offset ? offset + bytesLeft : chunk.length
 
-  var drained = this._req.write(chunk.slice(offset, end))
+  var drained = this._msg.write(chunk.slice(offset, end))
 
   this._bodyBytesWritten += chunk.length
 
@@ -90,14 +91,14 @@ Decoder.prototype._writeBody = function (chunk, offset, cb) {
     debug('end of body')
     this._inBody = false
     this._bodyBytesWritten = 0
-    this._req.end()
+    this._msg.end()
   }
 
   if (!drained) {
-    debug('back pressure detected in Request')
-    this._req._chunk = chunk
-    this._req._end = end
-    this._req._cb = cb
+    debug('back pressure detected in IncomingMessage')
+    this._msg._chunk = chunk
+    this._msg._end = end
+    this._msg._cb = cb
     return 0 // indicate we didn't consume the chunk (yet)
   }
 

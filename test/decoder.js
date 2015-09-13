@@ -73,4 +73,69 @@ pipes.forEach(function (pipe) {
     if (pipe) stream = stream.pipe(pipe())
     stream.pipe(decoder)
   })
+
+  test('response headers', function (t) {
+    t.plan(4)
+
+    var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'ok.txt'))
+    var decoder = new Decoder()
+
+    decoder.on('response', function (res) {
+      t.equal(res.rtspVersion, '1.0')
+      t.equal(res.statusCode, 200)
+      t.equal(res.statusMessage, 'OK')
+      t.deepEqual(res.headers, { 'cseq': '42', 'foo': 'Bar' })
+    })
+
+    if (pipe) stream = stream.pipe(pipe())
+    stream.pipe(decoder)
+  })
+
+  test('response body', function (t) {
+    t.plan(1)
+
+    var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'ok-body.txt'))
+    var decoder = new Decoder()
+
+    decoder.on('response', function (res) {
+      var buffers = []
+      res.on('data', buffers.push.bind(buffers))
+      res.on('end', function () {
+        var data = Buffer.concat(buffers).toString()
+        t.equal(data, '1234567890')
+      })
+    })
+
+    if (pipe) stream = stream.pipe(pipe())
+    stream.pipe(decoder)
+  })
+
+  test('multiple response bodies', function (t) {
+    var responses = 0
+    var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'ok-multiple-bodies.txt'))
+    var decoder = new Decoder()
+    var expected = [
+      '1st response',
+      'last response'
+    ]
+
+    decoder.on('response', function (res) {
+      var responseNumber = ++responses
+      t.equal(res.headers['cseq'], String(responseNumber))
+      var buffers = []
+      res.on('data', buffers.push.bind(buffers))
+      res.on('end', function () {
+        var data = Buffer.concat(buffers).toString()
+        t.equal(data, expected[responseNumber - 1])
+      })
+    })
+
+    decoder.on('finish', function () {
+      t.equal(responses, 2)
+      t.end()
+    })
+
+    if (pipe) stream = stream.pipe(pipe())
+    stream.pipe(decoder)
+  })
 })

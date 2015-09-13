@@ -1,7 +1,7 @@
 {
   "name": "rtsp-stream",
   "version": "0.1.1",
-  "description": "Encode/Decode an RTSP stream",
+  "description": "A serial multiplexer for encoding or decoding RTSP streams",
   "main": "index.js",
   "scripts": {
     "test": "standard && tape test/*.js"

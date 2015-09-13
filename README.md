@@ -149,7 +149,7 @@ Get a header value. Case insensitive.
 Remove a header so it is not sent to the client. Case insensitive.
 Throws an error if called after the headers have been flushed.
 
-#### `Response.writeHead([statusCode[, statusMessage]][, headers])`
+#### `Response.writeHead([statusCode[, statusMessage][, headers]])`
 
 Force writing of the RTSP response headers to the client. Will be called
 automatically on the first to call to either `response.write()` or

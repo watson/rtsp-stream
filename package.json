@@ -1,6 +1,6 @@
 {
   "name": "rtsp-stream",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A serial multiplexer for encoding or decoding RTSP streams",
   "main": "index.js",
   "scripts": {
@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/watson/rtsp-stream#readme",
   "coordinates": [
-    55.6877061,
-    12.5956135
+    55.68771959999999,
+    12.5955515
   ]
 }

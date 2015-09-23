@@ -29,7 +29,7 @@ Decoder.prototype._write = function (chunk, encoding, cb) {
 
 Decoder.prototype._writeOffset = function (chunk, offset, cb) {
   while (offset < chunk.length) {
-    debug('processing chunk', util.inspect(chunk.slice(offset).toString()))
+    debug('decoding chunk', util.inspect(chunk.slice(offset).toString()))
     if (this._inBody) {
       offset = this._writeBody(chunk, offset, cb)
       if (offset === 0) return // chunk not consumed - _writeOffset will be called again when ready

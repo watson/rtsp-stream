@@ -55,13 +55,14 @@ Decoder.prototype._writeHead = function (chunk, offset) {
 
   this._headerOffset = 0
   this._header = new Buffer(HEADER_MAX_BYTES)
-  this._inBody = true
 
   if (~NO_BODY_STATUS_CODES.indexOf(this._msg.statusCode)) {
     this._bodySize = 0
   } else {
     this._bodySize = parseInt(this._msg.headers['content-length'], 10) || 0
   }
+
+  if (this._bodySize > 0) this._inBody = true
 
   // _writeBody logic to handle back-pressure
   var self = this

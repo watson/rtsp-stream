@@ -45,6 +45,35 @@ pipes.forEach(function (pipe) {
     stream.pipe(decoder)
   })
 
+  test('without and with body', function (t) {
+    var requests = 0
+    var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'without-with-body.txt'))
+    var decoder = new Decoder()
+    var expected = [
+      '',
+      'body'
+    ]
+
+    decoder.on('request', function (req) {
+      var requestNumber = ++requests
+      t.equal(req.headers['cseq'], String(requestNumber))
+      var buffers = []
+      req.on('data', buffers.push.bind(buffers))
+      req.on('end', function () {
+        var data = Buffer.concat(buffers).toString()
+        t.equal(data, expected[requestNumber - 1])
+      })
+    })
+
+    decoder.on('finish', function () {
+      t.equal(requests, 2)
+      t.end()
+    })
+
+    if (pipe) stream = stream.pipe(pipe())
+    stream.pipe(decoder)
+  })
+
   test('multiple request bodies', function (t) {
     var requests = 0
     var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'multiple.txt'))

@@ -4,6 +4,41 @@ var test = require('tape')
 var Encoder = require('../encoder')
 
 test('encoder.response()', function (t) {
+  t.test('no body or headers', function (t) {
+    t.plan(1)
+
+    var encoder = new Encoder()
+
+    var buffers = []
+    encoder.on('data', buffers.push.bind(buffers))
+
+    var res = encoder.response()
+    res.end()
+
+    setTimeout(function () {
+      var data = Buffer.concat(buffers).toString()
+      t.equal(data, 'RTSP/1.0 200 OK\r\n\r\n')
+    }, 50)
+  })
+
+  t.test('no body - only headers', function (t) {
+    t.plan(1)
+
+    var encoder = new Encoder()
+
+    var buffers = []
+    encoder.on('data', buffers.push.bind(buffers))
+
+    var res = encoder.response()
+    res.setHeader('Foo', 'Bar')
+    res.end()
+
+    setTimeout(function () {
+      var data = Buffer.concat(buffers).toString()
+      t.equal(data, 'RTSP/1.0 200 OK\r\nFoo: Bar\r\n\r\n')
+    }, 50)
+  })
+
   t.test('encode a single response', function (t) {
     t.plan(1)
 

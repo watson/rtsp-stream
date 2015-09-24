@@ -78,19 +78,29 @@ pipes.forEach(function (pipe) {
     var requests = 0
     var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'multiple.txt'))
     var decoder = new Decoder()
-    var expected = [
+    var methods = [
+      'ANNOUNCE',
+      'SET_PARAMETER'
+    ]
+    var headers = [
+      { cseq: '1', 'content-length': '11' },
+      { cseq: '2', foo: 'Bar', 'content-length': '12' }
+    ]
+    var bodies = [
       '1st request',
       'last request'
     ]
 
     decoder.on('request', function (req) {
+      t.equal(req.method, methods[requests])
+      t.deepEqual(req.headers, headers[requests])
       var requestNumber = ++requests
       t.equal(req.headers['cseq'], String(requestNumber))
       var buffers = []
       req.on('data', buffers.push.bind(buffers))
       req.on('end', function () {
         var data = Buffer.concat(buffers).toString()
-        t.equal(data, expected[requestNumber - 1])
+        t.equal(data, bodies[requestNumber - 1])
       })
     })
 

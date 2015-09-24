@@ -1,0 +1,9 @@
+ANNOUNCE rtsp://example.com/1 RTSP/1.0
+CSeq: 1
+
+ANNOUNCE rtsp://example.com/2 RTSP/1.0
+CSeq: 2
+Foo: Bar
+Content-Length: 4
+
+body

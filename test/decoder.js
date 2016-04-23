@@ -45,6 +45,27 @@ pipes.forEach(function (pipe) {
     stream.pipe(decoder)
   })
 
+  test('request body - chopped', function (t) {
+    t.plan(2)
+
+    var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'announce.txt'))
+    var decoder = new Decoder()
+
+    decoder.on('request', function (req) {
+      var buffers = []
+      var s = req.pipe(choppa())
+      s.on('data', buffers.push.bind(buffers))
+      s.on('end', function () {
+        t.ok(buffers.length > 1)
+        var data = Buffer.concat(buffers).toString()
+        t.equal(data, '1234567890')
+      })
+    })
+
+    if (pipe) stream = stream.pipe(pipe())
+    stream.pipe(decoder)
+  })
+
   test('without and with body', function (t) {
     var requests = 0
     var stream = fs.createReadStream(path.resolve('test', 'fixtures', 'without-with-body.txt'))

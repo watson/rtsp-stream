@@ -48,41 +48,41 @@ Decoder.prototype._writeOffset = function (chunk, offset, cb) {
     } else if (this._inInterleavedHead) {
       offset = this._writeInterleavedHead(chunk, offset)
     } else if (this._inInterleavedPacket) {
-      offset = this._writeInterleavedPacket(chunk, offset,cb)
+      offset = this._writeInterleavedPacket(chunk, offset, cb)
     } else {
-      if (chunk[offset]===INTERLEAVED_SIGN)
-        offset = this._writeInterleavedHead(chunk, offset);
-      else
+      if (chunk[offset] === INTERLEAVED_SIGN) {
+        offset = this._writeInterleavedHead(chunk, offset)
+      } else {
         offset = this._writeHead(chunk, offset)
+      }
     }
   }
   cb()
 }
 Decoder.prototype._writeInterleavedHead = function (chunk, offset) {
   if (this._interleavedHeaderOffset === 0) {
-    debug('start of interleaved header');
-    this._inInterleavedHead = true;
+    debug('start of interleaved header')
+    this._inInterleavedHead = true
   }
-  if (chunk.length-offset<4) {
+  if (chunk.length - offset < 4) {
     chunk.copy(this._interleavedHeader, this._interleavedHeaderOffset, offset)
-    this._interleavedHeaderOffset += chunk.length-offset;
-    return chunk.length;
+    this._interleavedHeaderOffset += chunk.length - offset
+    return chunk.length
   }
 
-  chunk.copy(this._interleavedHeader,this._interleavedHeaderOffset, offset, offset+INTERLEAVED_HEADER_BYTES);
+  chunk.copy(this._interleavedHeader, this._interleavedHeaderOffset, offset, offset + INTERLEAVED_HEADER_BYTES)
 
-
-  debug('end of interleaved header');
-  this._inInterleavedHead = false;
+  debug('end of interleaved header')
+  this._inInterleavedHead = false
 
   this._packet = new stream.PassThrough()
-  this._packet.channel = this._interleavedHeader.readInt8(1);
-  this._packet.size = this._interleavedHeader.readInt16BE(2);
+  this._packet.channel = this._interleavedHeader.readInt8(1)
+  this._packet.size = this._interleavedHeader.readInt16BE(2)
 
   this._interleavedHeaderOffset = 0
   this._interleavedHeader = new Buffer(INTERLEAVED_HEADER_BYTES)
 
-  this._inInterleavedPacket = true;
+  this._inInterleavedPacket = true
 
   // _writeInterleavedPacket logic to handle back-pressure
   var self = this
@@ -93,7 +93,7 @@ Decoder.prototype._writeInterleavedHead = function (chunk, offset) {
     this._end = null
     this._cb = null
   })
-  this.emit('packet', this._packet);
+  this.emit('packet', this._packet)
 
   return offset + (INTERLEAVED_HEADER_BYTES - this._interleavedHeaderOffset)
 }
@@ -104,10 +104,9 @@ Decoder.prototype._writeInterleavedPacket = function (chunk, offset, cb) {
   var bytesLeft = this._packet.size - this._interleavedPacketBytesWritten
   var end = bytesLeft < chunk.length - offset ? offset + bytesLeft : chunk.length
 
-
   var drained = this._packet.write(chunk.slice(offset, end))
 
-  this._interleavedPacketBytesWritten += end-offset;
+  this._interleavedPacketBytesWritten += end - offset
 
   if (this._interleavedPacketBytesWritten >= this._packet.size) {
     debug('end of packet')
@@ -129,8 +128,8 @@ Decoder.prototype._writeInterleavedPacket = function (chunk, offset, cb) {
 
 Decoder.prototype._writeHead = function (chunk, offset) {
   if (this._headerOffset === 0) {
-    debug('start of header');
-    this._inHead = true;
+    debug('start of header')
+    this._inHead = true
   }
 
   chunk.copy(this._header, this._headerOffset, offset)
@@ -140,7 +139,7 @@ Decoder.prototype._writeHead = function (chunk, offset) {
   if (!~bodyStart) return chunk.length // still reading the header
 
   debug('end of header')
-  this._inHead = false;
+  this._inHead = false
 
   this._msg = new IncomingMessage(this._header)
 

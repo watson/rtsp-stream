@@ -28,16 +28,20 @@ Decoder.prototype._write = function (chunk, encoding, cb) {
 }
 
 Decoder.prototype._writeOffset = function (chunk, offset, cb) {
-  while (offset < chunk.length) {
-    debug('decoding chunk', util.inspect(chunk.slice(offset).toString()))
-    if (this._inBody) {
-      offset = this._writeBody(chunk, offset, cb)
-      if (offset === 0) return // chunk not consumed - _writeOffset will be called again when ready
-    } else {
-      offset = this._writeHead(chunk, offset)
+  try {
+    while (offset < chunk.length) {
+      debug('decoding chunk', util.inspect(chunk.slice(offset).toString()))
+      if (this._inBody) {
+        offset = this._writeBody(chunk, offset, cb)
+        if (offset === 0) return // chunk not consumed - _writeOffset will be called again when ready
+      } else {
+        offset = this._writeHead(chunk, offset)
+      }
     }
+    cb()
+  } catch (err) {
+    cb(err);
   }
-  cb()
 }
 
 Decoder.prototype._writeHead = function (chunk, offset) {

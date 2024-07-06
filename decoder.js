@@ -51,6 +51,35 @@ Decoder.prototype._writeHead = function (chunk, offset) {
 
   debug('end of header')
 
+  // ---------------------------------------------------------------------
+  // FILTER OUT TCP INTERLEAVED RTP PACKETS
+  // ---------------------------------------------------------------------
+  // look for and remove all TCP interleaved RTP packets detected in the buffer
+  // RTP interleaved packets start with a: (ASCII)'$' == (DECIMAL) 36 == (HEX) 0x24
+  while(this._header[0] === 0x24){
+      // ---------------------------------------------------------------------
+      // @see: https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol
+      // Stream data such as RTP packets is encapsulated by an ASCII dollar sign (24 hexadecimal),
+      // followed by a one-byte channel identifier, followed by the length of the encapsulated binary
+      // data as a binary, two-byte integer in network byte order (BIG-ENDIAN). The stream data follows
+      // immediately afterwards, without a CRLF, but including the upper-layer protocol headers.
+      // Each $ block contains exactly one upper-layer protocol data unit, e.g., one RTP packet.
+      // ---------------------------------------------------------------------
+      //let rtp_channel = this._header.readInt8(1);
+      let rtp_data_length = this._header.readInt16BE(2);
+
+      // calulate the RTP packet lenght by taking the data payload length and adding
+      // the 4 extra bytes that make up the interleaved RTP packet header
+      let rtp_packet_length = rtp_data_length + 4;
+
+      // copy the RTP packet data into a new buffer from the header buffer
+      //let rtp_packet_data = new Buffer(rtp_data_length);
+      //this._header.copy(rtp_packet_data, 0, 4, rtp_packet_length);
+
+      // truncate the header bufffer to exclude the RTP packet
+      this._header = this._header.slice(rtp_packet_length);
+  }  
+  
   this._msg = new IncomingMessage(this._header)
 
   this._headerOffset = 0
